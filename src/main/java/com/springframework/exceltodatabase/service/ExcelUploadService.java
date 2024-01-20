@@ -43,7 +43,7 @@ public class ExcelUploadService {
                         case 1 -> customer.setFirstName(cell.getStringCellValue());
                         case 2 -> customer.setLastName(cell.getStringCellValue());
                         case 3 -> customer.setCountry(cell.getStringCellValue());
-                        case 4 -> customer.setTelephone((int) cell.getNumericCellValue());
+                        case 4 -> customer.setTelephone((long) cell.getNumericCellValue());
                         default -> {
 
                         }

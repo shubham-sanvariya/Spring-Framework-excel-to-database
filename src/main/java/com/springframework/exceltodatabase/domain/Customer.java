@@ -18,5 +18,5 @@ public class Customer {
     private String firstName;
     private String lastName;
     private String country;
-    private Integer telephone;
+    private Long telephone;
 }
