@@ -1,5 +1,6 @@
 package com.springframework.exceltodatabase.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -18,5 +19,6 @@ public class Customer {
     private String firstName;
     private String lastName;
     private String country;
-    private Long telephone;
+    @Column(length = 10)
+    private String telephone;
 }

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -24,33 +25,40 @@ public class ExcelUploadService {
     public static List<Customer> getCustomersDataFromExcel(InputStream inputStream){
         List<Customer> customers = new ArrayList<>();
         try {
-            XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
-            XSSFSheet sheet = workbook.getSheet("customers");
+            try (XSSFWorkbook workbook = new XSSFWorkbook(inputStream)) {
+                XSSFSheet sheet = workbook.getSheet("customers");
 
-            int rowIndex = 0;
-            for (Row row : sheet) {
-                if (rowIndex == 0) {
-                    rowIndex++;
-                    continue;
-                }
-                Iterator<Cell> cellIterator = row.iterator();
-                int cellIndex = 0;
-                Customer customer = new Customer();
-                while (cellIterator.hasNext()) {
-                    Cell cell = cellIterator.next();
-                    switch(cellIndex){
-                        case 0 -> customer.setCustomerId((int) cell.getNumericCellValue());
-                        case 1 -> customer.setFirstName(cell.getStringCellValue());
-                        case 2 -> customer.setLastName(cell.getStringCellValue());
-                        case 3 -> customer.setCountry(cell.getStringCellValue());
-                        case 4 -> customer.setTelephone((long) cell.getNumericCellValue());
-                        default -> {
-
-                        }
+                int rowIndex = 0;
+                for (Row row : sheet) {
+                    if (rowIndex == 0) {
+                        rowIndex++;
+                        continue;
                     }
-                    cellIndex++;
+                    Iterator<Cell> cellIterator = row.iterator();
+                    int cellIndex = 0;
+                    Customer customer = new Customer();
+                    while (cellIterator.hasNext()) {
+                        Cell cell = cellIterator.next();
+                        DataFormatter dataFormatter = new DataFormatter();
+                        switch(cellIndex){
+                            case 0 -> customer.setCustomerId((int) cell.getNumericCellValue());
+                            case 1 -> customer.setFirstName(cell.getStringCellValue());
+                            case 2 -> customer.setLastName(cell.getStringCellValue());
+                            case 3 -> customer.setCountry(cell.getStringCellValue());
+                            case 4 -> {
+                                if (cell != null) {
+                                    String cellValueAsString = dataFormatter.formatCellValue(cell);
+                                    customer.setTelephone(cellValueAsString);
+        }
+                            }
+                            default -> {
+
+                            }
+                        }
+                        cellIndex++;
+                    }
+                    customers.add(customer);
                 }
-                customers.add(customer);
             }
         } catch (IOException e) {
             e.getStackTrace();
